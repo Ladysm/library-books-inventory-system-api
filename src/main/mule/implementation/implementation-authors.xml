@@ -5,12 +5,14 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<flow name="implementation-authors-flow" doc:id="10671f5d-4431-4f70-85d5-4604e8c9848c" >
+	<flow name="implementation-get-all-authors-flow" doc:id="10671f5d-4431-4f70-85d5-4604e8c9848c" >
 		<logger level="INFO" doc:name="start" doc:id="da6f12e5-4d7a-42dd-b381-864ef9912fc9" message="#[{&#10;	 correlationId: correlationId,&#10;	 payload: payload&#10;}]"/>
-		<db:select doc:name="select-authors-db" doc:id="5ab162a8-ea0d-43b4-920c-56ba5e7d35f4" config-ref="Database_Config_authors">
-			<db:sql ><![CDATA[SELECT * FROM movie_catalog.authors]]></db:sql>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="28448572-50d4-46e2-8200-7c15102df130" >
+			<db:select doc:name="select-authors-db" doc:id="5ab162a8-ea0d-43b4-920c-56ba5e7d35f4" config-ref="Database_Config_authors">
+			<db:sql><![CDATA[SELECT * FROM movie_catalog.authors]]></db:sql>
 		</db:select>
-		<ee:transform doc:name="Transform Message" doc:id="e710a155-621c-4279-8a88-18bf6ca4f634" >
+		</until-successful>
+		<ee:transform doc:name="transform-db-to-author-response" doc:id="e710a155-621c-4279-8a88-18bf6ca4f634" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -18,5 +20,49 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="c5b27f35-a032-4a46-917f-19cab451161e" message="#[{&#10;	 correlationId: correlationId,&#10;	 payload: payload&#10;}]"/>
+	</flow>
+	<flow name="implementation-get-author-by-id-flow" doc:id="85ac5e46-710f-4467-aa7f-3adcfce7b48f" >
+		<logger level="INFO" doc:name="start" doc:id="643a450d-da49-4efb-8d8c-2c35c1ee6c9d" message="{"/>
+		<flow-ref doc:name="set-authorId-subflow" doc:id="aa5d27ee-4d54-4204-ad83-1b5e09cea5b7" name="set-authorId-subflow"/>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="01df0a35-6c13-4c3b-887f-279dbe9afff1" >
+			<db:select doc:name="select-author-by-id" doc:id="0e3ca568-3db2-4502-b424-91494e505859" config-ref="Database_Config_authors">
+			<db:sql><![CDATA[SELECT * FROM authors WHERE id =:authorId]]></db:sql>
+			<db:input-parameters><![CDATA[#[authorId: vars.authorId]]]></db:input-parameters>
+		</db:select>
+		</until-successful>
+		<ee:transform doc:name="transform-db-to-author-response" doc:id="e6f3a64c-f8d1-4112-8fd5-eacd66337c2a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="1fb22a21-4689-4ddb-9985-cc4d210e7412" message="#[{&#10;	 correlationId: correlationId,&#10;	 payload: payload.id&#10;}]" />
+	</flow>
+	<flow name="implementation-create-authors-flow" doc:id="92c9b919-3a4f-4b07-aa14-048f1d642db3" >
+		<logger level="INFO" doc:name="start" doc:id="65cfae18-bfbf-4751-804b-3b2642a1624b" message="{" />
+		<flow-ref doc:name="set-author-input-subflow" doc:id="1b7cda14-69c2-401c-a97a-12ba2b5bb86d" name="set-author-input-subflow"/>
+		<db:insert doc:name="insert-author" doc:id="09b789e5-5e67-4310-a65a-3ac25a75f716" config-ref="Database_Config_authors">
+			<db:sql ><![CDATA[INSERT INTO authors (name, country)
+VALUES (:name, :country);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"name": vars.authorInput.name,
+	 "country": vars.authorInput.country
+	
+	}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="message-response" doc:id="a3af3406-2446-4c21-b88d-bcd05362982e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	"message": "created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="6fe547bf-efa0-41fe-969e-2faebc4a3051" message="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  correlationId: correlationId,&#10;  payload: payload.id&#10;}]" />
 	</flow>
 </mule>

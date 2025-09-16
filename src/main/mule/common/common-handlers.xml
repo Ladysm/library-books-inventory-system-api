@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="set-authorId-subflow" doc:id="6484cd6a-7aaa-4549-9ec8-c38a33e213ee" >
+		<set-variable value="#[attributes.uriParams.authorId]" doc:name="authorId" doc:id="c5bc6085-b99b-4a16-9823-e2d488b87d77" variableName="authorId"/>
+	</sub-flow>
+	<sub-flow name="set-author-input-subflow" doc:id="07d460f3-1e07-4b58-bec7-581f7cfb859a" >
+		<set-variable value="#[payload]" doc:name="authorInput" doc:id="d37495a9-490d-45cf-b1ea-2a8ca49db3d1" variableName="authorInput"/>
+	</sub-flow>
+</mule>

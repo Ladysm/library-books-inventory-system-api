@@ -155,15 +155,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\authors:piloto-books-system-api-config" doc:id="5c2d4cf8-a89b-4bb4-a7b8-41e48c836749">
-        <flow-ref doc:name="implementation-authors-flow" doc:id="2ee3de5a-6250-4882-bfc8-640e914cf845" name="implementation-authors-flow"/>
-		<ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="implementation-authors-flow" doc:id="2ee3de5a-6250-4882-bfc8-640e914cf845" name="implementation-get-all-authors-flow"/>
     </flow>
     <flow name="get:\books:piloto-books-system-api-config">
         <ee:transform doc:name="Transform Message">
@@ -201,23 +193,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\authors\(authorId):piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="authorId">attributes.uriParams.'authorId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  id: 1,
-  name: "Gabriel García Márquez",
-  country: "Colombia"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="implementation-get-author-by-id-flow" doc:id="f7955e71-8ade-496e-8779-31d94a0d91c7" name="implementation-get-author-by-id-flow"/>
     </flow>
     <flow name="get:\books\(bookId):piloto-books-system-api-config">
         <ee:transform doc:name="Transform Message">
@@ -239,14 +215,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\authors:application\json:piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-"Autor creado exitosamente" as String {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="implementation-create-authors-flow" doc:id="ec337a5b-84e0-4f0a-894c-a713762f90af" name="implementation-create-authors-flow"/>
     </flow>
     <flow name="post:\books:application\json:piloto-books-system-api-config">
         <ee:transform doc:name="Transform Message">
