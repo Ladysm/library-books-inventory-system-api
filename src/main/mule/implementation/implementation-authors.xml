@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="implementation-authors-flow" doc:id="10671f5d-4431-4f70-85d5-4604e8c9848c" >
+		<logger level="INFO" doc:name="start" doc:id="da6f12e5-4d7a-42dd-b381-864ef9912fc9" message="#[{&#10;	 correlationId: correlationId,&#10;	 payload: payload&#10;}]"/>
+		<db:select doc:name="select-authors-db" doc:id="5ab162a8-ea0d-43b4-920c-56ba5e7d35f4" config-ref="Database_Config_authors">
+			<db:sql ><![CDATA[SELECT * FROM movie_catalog.authors]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="e710a155-621c-4279-8a88-18bf6ca4f634" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
