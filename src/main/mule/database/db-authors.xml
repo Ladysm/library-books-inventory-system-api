@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="db-authors-subflow" doc:id="5eb13103-40f0-4dcb-afe1-dc4ba792699d" >
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="19407ca9-2c51-4d2a-9f54-497d3180e67b" >
+			<db:select doc:name="select-authors-db" doc:id="45df5e1e-275b-434d-a077-0b9ea16c54e2" config-ref="Database_Config_authors" >
+				<db:sql ><![CDATA[SELECT * FROM movie_catalog.authors]]></db:sql>
+			</db:select>
+		</until-successful>
+	</sub-flow>
+	<sub-flow name="db-author-by-id-subflow" doc:id="2a237253-1c0a-48dd-9d91-9ddd30b18110" >
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="c10f6591-5d5f-4a7d-8844-5cd177b8469d" >
+			<db:select doc:name="select-author-by-id-db" doc:id="b8b3b6cc-052f-48b3-b678-37450fc5939a" config-ref="Database_Config_authors" >
+				<db:sql ><![CDATA[SELECT * FROM authors WHERE id =:authorId]]></db:sql>
+				<db:input-parameters ><![CDATA[#[authorId: vars.authorId]]]></db:input-parameters>
+			</db:select>
+		</until-successful>
+	</sub-flow>
+	<sub-flow name="db-author-create-subflow" doc:id="40690713-7eb8-46d9-8d5f-b7be59b7ea10" >
+		<db:insert doc:name="insert-author-db" doc:id="fd9b943d-f4ba-43d6-802b-4a91787047f1" config-ref="Database_Config_authors" >
+			<db:sql ><![CDATA[INSERT INTO authors (name, country)
+VALUES (:name, :country);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"name": vars.authorInput.name,
+	 "country": vars.authorInput.country
+	
+	}]]]></db:input-parameters>
+		</db:insert>
+	</sub-flow>
+</mule>
