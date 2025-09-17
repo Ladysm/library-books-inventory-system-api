@@ -23,10 +23,10 @@ http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Bad request"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -36,10 +36,10 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Resource not found"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -49,10 +49,10 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Method not allowed"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -62,10 +62,10 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not acceptable"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -75,10 +75,10 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Unsupported media type"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -88,10 +88,10 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not Implemented"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -115,116 +115,37 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Resource not found"}]]></ee:set-payload>
+{message: error.description}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
         </error-handler>
     </flow>
     <flow name="put:\books\(bookId):application\json:piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="bookId">attributes.uriParams.'bookId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-"Libro actualizado exitosamente" as String {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="implementation-update-book-flow" doc:id="84727065-5e95-48b0-8112-b66d39328ff4" name="implementation-update-book-flow"/>
     </flow>
     <flow name="delete:\books\(bookId):piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="bookId">attributes.uriParams.'bookId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-"Libro Eliminado exitosamente" as String {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="implementation-delete-book-flow" doc:id="355df38c-e659-441e-b110-65299e01dc28" name="implementation-delete-book-flow"/>
     </flow>
     <flow name="get:\authors:piloto-books-system-api-config" doc:id="5c2d4cf8-a89b-4bb4-a7b8-41e48c836749">
         <flow-ref doc:name="implementation-authors-flow" doc:id="2ee3de5a-6250-4882-bfc8-640e914cf845" name="implementation-get-all-authors-flow"/>
     </flow>
     <flow name="get:\books:piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    id: 1,
-    name: "Cien años de soledad",
-    author: "Gabriel García Márquez",
-    year: 1967
-  }, 
-  {
-    id: 2,
-    name: "El Principito",
-    author: "Antoine de Saint-Exupéry",
-    year: 1943
-  }, 
-  {
-    id: 3,
-    name: "1984",
-    author: "George Orwell",
-    year: 1949
-  }, 
-  {
-    id: 4,
-    name: "Don Quijote de la Mancha",
-    author: "Miguel de Cervantes",
-    year: 1605
-  }
-] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="implementation-get-all-books-flow" doc:id="e14ea991-f8af-43b7-8986-f212daf4bcf1" name="implementation-get-all-books-flow"/>
     </flow>
     <flow name="get:\authors\(authorId):piloto-books-system-api-config">
 		<flow-ref doc:name="implementation-get-author-by-id-flow" doc:id="f7955e71-8ade-496e-8779-31d94a0d91c7" name="implementation-get-author-by-id-flow"/>
     </flow>
     <flow name="get:\books\(bookId):piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="bookId">attributes.uriParams.'bookId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  name: "Don Quijote de la Mancha",
-  author: "Miguel de Cervantes",
-  year: 1605
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="implementation-get-books-by-id-flow" doc:id="5b4fa5f7-c029-4591-875b-934d91ad765d" name="implementation-get-books-by-id-flow"/>
     </flow>
     <flow name="post:\authors:application\json:piloto-books-system-api-config">
         <flow-ref doc:name="implementation-create-authors-flow" doc:id="ec337a5b-84e0-4f0a-894c-a713762f90af" name="implementation-create-authors-flow"/>
     </flow>
     <flow name="post:\books:application\json:piloto-books-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-"Libro creado exitosamente" as String {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="implementation-create-book-flow" doc:id="87990ead-90c9-4c2f-896a-ebb267449ea7" name="implementation-create-book-flow"/>
     </flow>
 </mule>

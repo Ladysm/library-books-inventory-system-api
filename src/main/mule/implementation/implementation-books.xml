@@ -1,5 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></mule>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="implementation-get-all-books-flow" doc:id="0b27e64c-a765-4ed6-aa29-043264c081f5" >
+		<logger level="INFO" doc:name="start" doc:id="aa41d292-5ac7-43bb-9ca4-ae36aa6cc6b6" message="#[{&#10;	 correlationId: correlationId&#10;	 &#10;}]" />
+		<flow-ref doc:name="db-books-subflow" doc:id="50757579-cf07-46db-8c04-227c5e830466" name="db-books-subflow" />
+		<ee:transform doc:name="all-books-response" doc:id="f88c7951-8a43-4131-a297-c015a8ad1bf1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="2aeb7006-0d65-4773-a155-fea1db6ed5f7" message="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	 correlationId: correlationId,&#10;	 payload: payload&#10;}]" />
+	</flow>
+	<flow name="implementation-get-books-by-id-flow" doc:id="bc847c65-29ef-40ad-976f-01a2624c4ad6" >
+		<logger level="INFO" doc:name="start" doc:id="00622ea8-08d6-4f29-b627-40cd989f0015" message="{" />
+		<flow-ref doc:name="set-bookid-sub-flow" doc:id="93318719-7cc6-4a63-8269-ec9371307e47" name="set-bookid-sub-flow" />
+		<flow-ref doc:name="db-books-by-id-subflow" doc:id="41ed0cb8-455d-4487-8d51-e19200f79135" name="db-books-by-id-subflow" />
+		<ee:transform doc:name="books-by-id-response" doc:id="1b3f8865-5b6d-46d3-92b3-461945d33591" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="dd6d7407-68ad-40eb-9ca7-83700b5d646e" message="#[{&#10;	 correlationId: correlationId&#10;	&#10;	 }]" />
+	</flow>
+	<flow name="implementation-create-book-flow" doc:id="8106b12d-ccb7-4653-bf1d-c60cba16c4d6" >
+		<logger level="INFO" doc:name="start" doc:id="ef82094b-7079-4948-8742-5e34a5ac037c" message="{" />
+		<flow-ref doc:name="db-book-create-subflow" doc:id="22becc4e-e525-4c0e-9ae9-84f069dd30c0" name="db-book-create-subflow" />
+		<ee:transform doc:name="created-message-response" doc:id="c9f2dd4b-4d32-47d8-9829-9d661439ce0c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	"message": "created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="2c0d9d35-55e2-4187-a544-75026e10af96" message="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  correlationId: correlationId,&#10;  payload: payload.id&#10;}]" />
+	</flow>
+	<flow name="implementation-delete-book-flow" doc:id="d611d158-a3d1-4c00-92a8-ceab4e15e5b2" >
+		<logger level="INFO" doc:name="start" doc:id="a6e21256-5966-4f75-acb7-93aaba122c2a" message="{" />
+		<flow-ref doc:name="set-bookid-sub-flow" doc:id="fb18eb01-e221-4648-85f3-e3979aa79b04" name="set-bookid-sub-flow"/>
+		<flow-ref doc:name="db-book-delete" doc:id="68275931-2d5b-4a01-ad16-4c0e90a94402" name="db-book-delete-sub-flow"/>
+		<ee:transform doc:name="deleted-message-response" doc:id="4cf06413-ea61-4ba9-bf1a-871ce3622ee6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	"message": "deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="implementation-update-book-flow" doc:id="d4445bca-2c17-42df-be26-e7caeccced64" >
+		<logger level="INFO" doc:name="start" doc:id="389f33b4-5b26-49e0-a9b8-4023a90ff6c9" message="{" />
+		<flow-ref doc:name="set-bookid-sub-flow" doc:id="a289c6d4-00ba-4cfd-a470-2d71933462b6" name="set-bookid-sub-flow" />
+		<flow-ref doc:name="db-book-update-sub-flow" doc:id="2d09c1fd-4904-4217-b4a3-ffaf6f975b68" name="db-book-update-sub-flow"/>
+		<ee:transform doc:name="update-message-response" doc:id="cf0ec435-2de5-45ce-83c0-383e7a71410f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

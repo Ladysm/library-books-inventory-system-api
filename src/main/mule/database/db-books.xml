@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="db-books-subflow" doc:id="f776997c-f25b-47a7-98ce-e7e5a3418ea9" >
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="4db177c9-c8cd-4af2-be73-56e1d08820e3" >
+			<db:select doc:name="select-books-db" doc:id="da5a3f55-3e2a-407c-a0e7-1e071750d34c" config-ref="Database_Config_books" >
+				<db:sql ><![CDATA[SELECT * FROM movie_catalog.librarybooks]]></db:sql>
+			</db:select>
+		</until-successful>
+	</sub-flow>
+	<sub-flow name="db-books-by-id-subflow" doc:id="a4c6e16d-d8de-41b2-ac67-4fa1e712078f" >
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="47be7142-3a64-4163-9614-f4c49d707253" >
+			<db:select doc:name="select-book-by-id-db" doc:id="d312e9e9-d1ba-4b0c-8110-3f06b5ef4b66" config-ref="Database_Config_books" >
+				<db:sql ><![CDATA[SELECT * FROM librarybooks WHERE id =:bookId]]></db:sql>
+				<db:input-parameters ><![CDATA[#[bookId: vars.bookId]]]></db:input-parameters>
+			</db:select>
+		</until-successful>
+	</sub-flow>
+	<sub-flow name="db-book-create-subflow" doc:id="5ad22a49-e96a-4ef8-b760-b25468b4f606" >
+		<db:insert doc:name="insert-book-db" doc:id="e72114c7-dfcf-4fa1-9e4f-726caf9b560c" config-ref="Database_Config_books" >
+			<db:sql ><![CDATA[INSERT INTO librarybooks (name, author, year )
+VALUES (:name, :author, :year);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"name": payload.name,
+	 "author": payload.author,
+	 "year": payload.year
+	
+	}]]]></db:input-parameters>
+		</db:insert>
+	</sub-flow>
+	<sub-flow name="db-book-delete-sub-flow" doc:id="a2f27077-3a22-464a-9e6b-f3f57f75f903" >
+		<db:delete doc:name="delete-book-db" doc:id="2e8e81c3-4ef3-4ec5-9943-e3ea5de2176d" config-ref="Database_Config_books">
+			<db:sql ><![CDATA[DELETE FROM librarybooks WHERE id =:bookId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[bookId: vars.bookId]]]></db:input-parameters>
+		</db:delete>
+	</sub-flow>
+	<sub-flow name="db-book-update-sub-flow" doc:id="7a413453-d216-4d0b-affe-64e2c77bdc80" >
+		<db:update doc:name="update-book-db" doc:id="b031bc90-7adc-4085-9d44-309d6100c24e" config-ref="Database_Config_books">
+			<db:sql ><![CDATA[UPDATE librarybooks
+SET name   = :name,
+    author = :author,
+    year   = :year
+WHERE id   = :bookId;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+"name": payload.name,
+"author": payload.author,
+"year": payload.year,	
+bookId : vars.bookId
+
+}]]]></db:input-parameters>
+		</db:update>
+	</sub-flow>
+</mule>

@@ -10,4 +10,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="set-author-input-subflow" doc:id="07d460f3-1e07-4b58-bec7-581f7cfb859a" >
 		<set-variable value="#[payload]" doc:name="authorInput" doc:id="d37495a9-490d-45cf-b1ea-2a8ca49db3d1" variableName="authorInput"/>
 	</sub-flow>
+	<sub-flow name="set-bookid-sub-flow" doc:id="06ae0106-a665-4e9a-8518-6da5882001a5" >
+		<set-variable value="#[attributes.uriParams.bookId]" doc:name="bookId" doc:id="60e91783-b207-40dd-be07-789a05e0b7ef" variableName="bookId"/>
+	</sub-flow>
 </mule>

@@ -8,4 +8,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<db:config name="Database_Config_authors" doc:name="Database Config" doc:id="62915c63-bbdf-456e-b777-df6be6a5e64a" >
 		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.user}" password="${database.password}" database="${database.database-name}" />
 	</db:config>
+	<db:config name="Database_Config_books" doc:name="Database Config" doc:id="94e1ef24-9a7a-4fe5-8883-ad5964bbdd87" >
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.user}" password="${database.password}" database="${database.database-name}" />
+	</db:config>
 </mule>
